@@ -1,15 +1,11 @@
-import { Router, Request, Response } from 'express';
-import passport from 'passport';
+import { Request, Response } from 'express';
 import { IUser } from '../models/users.js';
 import { User } from '../models/users.js';
 import { generateToken, generateRefreshToken } from '../services/GoogleAuthService.js';
 
-const router = Router();
 const refreshTokens: { [key: string]: string } = {};
 
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/' }), (req: Request, res: Response) => {
+export const googleAuthCallback = (req: Request, res: Response) => {
   const user = req.user as IUser;
   const token = generateToken(user);
   const refreshToken = generateRefreshToken(user);
@@ -17,9 +13,9 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
   refreshTokens[refreshToken] = user.passwords.email;
 
   res.redirect(`http://localhost:5173/login?token=${token}&refreshToken=${refreshToken}&googleToken=${googleToken}`);
-});
+};
 
-router.post('/refresh-token', async (req: Request, res: Response) => {
+export const refreshToken = async (req: Request, res: Response) => {
   const { refreshToken } = req.body;
   const email = refreshTokens[refreshToken];
   if (email) {
@@ -33,22 +29,31 @@ router.post('/refresh-token', async (req: Request, res: Response) => {
   } else {
     res.status(401).json({ error: 'Invalid refresh token' });
   }
-});
+};
 
-router.get('/logout', (req, res, next) => {
+export const logout = (req: Request, res: Response, next: (err?: any) => void) => {
   req.logout((err) => {
-    if (err) { return next(err); }
+    if (err) {
+      return next(err);
+    }
     res.redirect('/');
   });
-});
+};
 
-router.get('/users', async (req: Request, res: Response) => {
+export const login = (req: Request, res: Response, next: (err?: any) => void) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect('/');
+  });
+};
+
+export const getUsers = async (req: Request, res: Response) => {
   try {
     const users = await User.find();
     res.json(users);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch users' });
   }
-});
-
-export default router;
+};

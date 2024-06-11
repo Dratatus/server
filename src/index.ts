@@ -4,9 +4,12 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import passport from 'passport';
 import dotenv from 'dotenv';
-import routes from './routes/routes.js';
 import './services/GoogleAuthService.js';
 import connectDB from './DB/connect.js';
+import ProjectRoutes from "./routes/project.js"
+import GoogleRoutes from "./routes/google.js"
+import StoryRoutes from './routes/stories.js';
+import TaskRoutes from './routes/tasks.js';
 
 dotenv.config();
 
@@ -24,7 +27,8 @@ app.use(session({ secret: SESSION_SECRET, resave: false, saveUninitialized: true
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/api/auth', routes);
+app.use('/api', ProjectRoutes, StoryRoutes, TaskRoutes);
+app.use('/api/auth', GoogleRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
