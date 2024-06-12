@@ -3,7 +3,11 @@ import Task from '../models/task.js';
 
 export const createTask = async (req: Request, res: Response) => {
     try {
-        const task = new Task(req.body);
+        const taskData = {
+            ...req.body,
+            id: new Date().getTime(),
+        };
+        const task = new Task(taskData);
         await task.save();
         res.status(201).json(task);
     } catch (err) {
@@ -17,7 +21,7 @@ export const createTask = async (req: Request, res: Response) => {
 
 export const getTasks = async (req: Request, res: Response) => {
     try {
-        const tasks = await Task.find();
+        const tasks = await Task.find().lean();
         res.status(200).json(tasks);
     } catch (err) {
         if (err instanceof Error) {
@@ -30,7 +34,10 @@ export const getTasks = async (req: Request, res: Response) => {
 
 export const updateTask = async (req: Request, res: Response) => {
     try {
-        const task = await Task.findOneAndUpdate({ id: req.params.id }, req.body, { new: true });
+        const updateData = {
+            ...req.body,
+        };
+        const task = await Task.findOneAndUpdate({ id: req.params.id }, updateData, { new: true }).lean();
         if (!task) {
             return res.status(404).json({ error: 'Task not found' });
         }
@@ -43,6 +50,7 @@ export const updateTask = async (req: Request, res: Response) => {
         }
     }
 };
+
 
 export const deleteTask = async (req: Request, res: Response) => {
     try {
