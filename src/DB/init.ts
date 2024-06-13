@@ -33,7 +33,6 @@ const initDatabase = async () => {
   ];
 
   try {
-    // Usunięcie istniejących danych i dodanie nowych
     await User.deleteMany({});
     await User.insertMany(users);
     console.log('Database initialized with sample data');
