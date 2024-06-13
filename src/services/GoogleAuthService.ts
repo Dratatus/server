@@ -17,11 +17,9 @@ passport.use(new GoogleStrategy({
     callbackURL: CALLBACK_URL
 }, async (accessToken, refreshToken, profile, done) => {
     try {
-        // Sprawdzenie, czy użytkownik już istnieje w bazie danych
         let user = await User.findOne({ 'passwords.email': profile.emails?.[0].value });
 
         if (!user) {
-            // Jeśli użytkownik nie istnieje, utwórz nowego użytkownika
             user = new User({
                 id: profile.id,
                 firstName: profile.name?.givenName || '',
