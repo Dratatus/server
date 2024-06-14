@@ -2,8 +2,7 @@ import mongoose from 'mongoose';
 import connectDB from './connect.js';
 import { User } from '../models/users.js'; 
 
-const initDatabase = async () => {
-  await connectDB();
+export const initDatabase = async () => {
 
   const users = [
     {
@@ -38,12 +37,5 @@ const initDatabase = async () => {
     console.log('Database initialized with sample data');
   } catch (error) {
     console.error('Error initializing database:', error);
-  } finally {
-    mongoose.connection.close();
   }
 };
-
-initDatabase().catch(error => {
-  console.error('Error initializing database:', error);
-  process.exit(1);
-});

@@ -11,6 +11,7 @@ import GoogleRoutes from "./routes/google.js"
 import StoryRoutes from './routes/stories.js';
 import TaskRoutes from './routes/tasks.js';
 import AuthRoutes from './routes/auth.js';
+import { initDatabase } from './DB/init.js';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ const PORT = process.env.PORT || 3000;
 const SESSION_SECRET = process.env.SESSION_SECRET || 'your-secret-key';
 
 connectDB();
+initDatabase();
 
 app.use(bodyParser.json());
 app.use(cors());
